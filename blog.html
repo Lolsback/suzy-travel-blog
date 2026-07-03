@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Wander With Suzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FFF8F0;
+      --coral: #FF6B6B;
+      --green: #2D6A4F;
+      --dark: #1a1a1a;
+      --muted: #777;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    body.popup-open { overflow: hidden; }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 248, 240, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 107, 107, 0.12);
+      padding: 0 2.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--green);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--coral); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--dark);
+      transition: all 0.3s;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      min-height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+      background: linear-gradient(160deg, #FFF8F0 0%, #FFEEDD 60%, #FFE4CC 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 500px 350px at 85% 30%, rgba(255,107,107,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 300px at 10% 70%, rgba(45,106,79,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-header-inner {
+      position: relative;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .page-eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--coral);
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      color: var(--green);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .page-title em { font-style: italic; color: var(--coral); }
+
+    .page-sub {
+      color: var(--muted);
+      font-size: 0.97rem;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    /* ── Filter bar ── */
+    .filter-wrap {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      padding: 2.5rem 2.5rem 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .filter-btn {
+      padding: 0.48rem 1.35rem;
+      border-radius: 50px;
+      border: 2px solid rgba(0,0,0,0.1);
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+      background: white;
+      color: var(--muted);
+    }
+
+    .filter-btn.active { background: var(--coral); color: white; border-color: var(--coral); }
+    .filter-btn:not(.active):hover { border-color: var(--coral); color: var(--coral); }
+
+    .post-count {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      padding: 1.6rem 2.5rem 0;
+    }
+
+    .post-count strong { color: var(--coral); }
+
+    /* ── Grid ── */
+    .grid-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 2.5rem 5rem;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    /* ── Card ── */
+    .post-card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .post-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+    }
+
+    .card-img-wrap { position: relative; overflow: hidden; aspect-ratio: 16 / 9; }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .post-card:hover .card-img { transform: scale(1.05); }
+
+    .card-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .card-badge.home      { background: rgba(255,107,107,0.88); }
+    .card-badge.culture   { background: rgba(91,127,166,0.88); }
+    .card-badge.food      { background: rgba(192,112,78,0.88); }
+    .card-badge.adventure { background: rgba(45,106,79,0.88); }
+
+    .card-body {
+      padding: 1.55rem 1.7rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-destination {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--coral);
+      margin-bottom: 0.55rem;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.22rem;
+      color: var(--dark);
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 0.85rem;
+    }
+
+    .card-meta::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 1px;
+      background: var(--coral);
+      flex-shrink: 0;
+    }
+
+    .card-excerpt {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.7;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+      flex: 1;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--coral);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: gap 0.22s;
+      align-self: flex-start;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      padding: 0;
+    }
+
+    .card-link:hover { gap: 0.65rem; }
+    .card-link:hover svg { transform: translateX(3px); }
+    .card-link svg { transition: transform 0.22s; }
+
+    /* ── Popup overlay ── */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 15, 15, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .popup-overlay.open { display: flex; }
+
+    /* ── Popup modal ── */
+    .popup-modal {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 760px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.45);
+      overflow: hidden;
+      animation: popup-in 0.3s cubic-bezier(0.34,1.4,0.64,1) forwards;
+    }
+
+    @keyframes popup-in {
+      from { opacity: 0; transform: scale(0.93) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* sticky header — back button never scrolls away */
+    .popup-head {
+      flex-shrink: 0;
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      background: white;
+      z-index: 1;
+    }
+
+    .popup-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: 2px solid rgba(0,0,0,0.1);
+      border-radius: 50px;
+      padding: 0.48rem 1.1rem;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--dark);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      letter-spacing: 0.03em;
+    }
+
+    .popup-back-btn:hover { border-color: var(--coral); color: var(--coral); }
+
+    /* scrollable article body */
+    .popup-body {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* article layout inside popup */
+    .article-img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .article-content {
+      padding: 2rem 2.5rem 3rem;
+    }
+
+    .article-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      margin-bottom: 0.6rem;
+    }
+
+    .article-badge.home      { background: var(--coral); }
+    .article-badge.culture   { background: #5B7FA6; }
+    .article-badge.food      { background: #C0704E; }
+    .article-badge.adventure { background: var(--green); }
+
+    .article-dest {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .article-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--dark);
+      line-height: 1.25;
+      margin-bottom: 0.55rem;
+    }
+
+    .article-meta {
+      font-size: 0.76rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.8rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .article-meta::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--coral);
+      flex-shrink: 0;
+    }
+
+    .article-body p {
+      font-size: 1rem;
+      line-height: 1.85;
+      color: #444;
+      font-weight: 300;
+      margin-bottom: 1.3rem;
+    }
+
+    .article-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.22rem;
+      color: var(--green);
+      margin: 2rem 0 0.75rem;
+      line-height: 1.3;
+    }
+
+    .article-body blockquote {
+      border-left: 3px solid var(--coral);
+      padding: 0.5rem 1.4rem;
+      margin: 1.8rem 0;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.12rem;
+      color: var(--green);
+      line-height: 1.65;
+    }
+
+    .tip-box {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.8rem 0 0;
+    }
+
+    .tip-box strong {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 0.65rem;
+    }
+
+    .tip-box ul { list-style: none; padding: 0; }
+
+    .tip-box li {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.7;
+      padding-left: 1.3rem;
+      position: relative;
+      font-weight: 300;
+    }
+
+    .tip-box li + li { margin-top: 0.3rem; }
+
+    .tip-box li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--coral);
+      font-size: 0.78rem;
+      top: 0.05rem;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--cream);
+      border-top: 3px solid var(--green);
+      padding: 2.8rem 2rem;
+      text-align: center;
+    }
+    .footer-inner { max-width: 600px; margin: 0 auto; }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--dark);
+      margin-bottom: 1.4rem;
+    }
+    .footer-socials {
+      display: flex;
+      justify-content: center;
+      gap: 0.9rem;
+      margin-bottom: 1.6rem;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--coral);
+      color: var(--coral);
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .social-link:hover { background: var(--coral); color: white; }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-copy { font-size: 0.78rem; color: var(--muted); }
+    .back-to-top {
+      font-size: 0.78rem;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+    }
+    .back-to-top:hover { color: var(--coral); }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 1.25rem; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(255,248,240,0.98);
+        padding: 1rem 1.5rem 1.5rem;
+        border-bottom: 1px solid rgba(255,107,107,0.12);
+        gap: 1rem;
+      }
+
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+
+      .page-header { min-height: auto; padding: 3.5rem 1.25rem; }
+      .filter-wrap { padding: 2rem 1.25rem 0; }
+      .post-count  { padding: 1.4rem 1.25rem 0; }
+      .grid-wrap   { padding: 2rem 1.25rem 4rem; }
+      .posts-grid  { grid-template-columns: 1fr; gap: 1.5rem; }
+      .card-title  { font-size: 1.12rem; }
+
+      /* Popup full-width centered on mobile */
+      .popup-overlay {
+        padding: 0;
+        align-items: center;
+      }
+
+      .popup-modal {
+        width: 100%;
+        max-width: 100%;
+        height: 80vh;
+        max-height: 80vh;
+        border-radius: 16px;
+        animation: popup-in-mobile 0.32s cubic-bezier(0.34,1.2,0.64,1) forwards;
+      }
+
+      .article-img  { height: 200px; }
+      .article-content { padding: 1.5rem 1.25rem 2.5rem; }
+    }
+
+    @keyframes popup-in-mobile {
+      from { opacity: 0; transform: translateY(50px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  /* ─── Scroll Reveal ─── */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ─── Navigation ─── -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">Wander With Suzy</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="blog.html" class="active">Blog</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ─── Page Header ─── -->
+<header class="page-header">
+  <div class="page-header-inner reveal">
+    <span class="page-eyebrow">✦ The Journal</span>
+    <h1 class="page-title">Stories from the <em>Road</em></h1>
+    <p class="page-sub">Honest guides, half-formed feelings, and the places that made me stop and stare.</p>
+  </div>
+</header>
+
+<!-- ─── Filter ─── -->
+<div class="filter-wrap reveal">
+  <button class="filter-btn active" data-filter="all">All Posts</button>
+  <button class="filter-btn" data-filter="culture">Culture</button>
+  <button class="filter-btn" data-filter="food">Food</button>
+  <button class="filter-btn" data-filter="adventure">Adventure</button>
+  <button class="filter-btn" data-filter="home">Home Base</button>
+</div>
+
+<p class="post-count"><strong id="visible-count">8</strong> posts</p>
+
+<!-- ─── Grid ─── -->
+<div class="grid-wrap">
+  <div class="posts-grid reveal-stagger" id="posts-grid">
+
+    <article class="post-card reveal" data-category="home" data-id="1">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/lisbon42/800/450" alt="Lisbon golden hour rooftops">
+        <span class="card-badge home">Home Base</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Lisbon, Portugal</div>
+        <h2 class="card-title">The Perfect 5-Day Lisbon Itinerary (By Someone Who Never Left)</h2>
+        <div class="card-meta">June 2, 2026</div>
+        <p class="card-excerpt">Trams, hand-painted tiles, and pastéis de nata still warm from the oven. I moved here for a month and somehow five years passed.</p>
+        <button class="card-link" data-id="1">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="adventure" data-id="2">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/bali88/800/450" alt="Bali rice terraces at dawn">
+        <span class="card-badge adventure">Adventure</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Bali, Indonesia</div>
+        <h2 class="card-title">Chasing Sunrise at Tegalalang: What No One Tells You</h2>
+        <div class="card-meta">May 18, 2026</div>
+        <p class="card-excerpt">Set your alarm for 4am. Bring mosquito spray. Ignore the Instagram crowds and walk ten minutes left — that's where the real magic lives.</p>
+        <button class="card-link" data-id="2">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="culture" data-id="3">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/tokyo55/800/450" alt="Tokyo street scene cherry blossoms">
+        <span class="card-badge culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Tokyo, Japan</div>
+        <h2 class="card-title">Tokyo in Cherry Blossom Season: A Love Letter</h2>
+        <div class="card-meta">April 4, 2026</div>
+        <p class="card-excerpt">Ueno Park at dusk, petals falling into my convenience store coffee. Hanami season is the most beautifully lost I've ever felt in a city.</p>
+        <button class="card-link" data-id="3">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="food" data-id="4">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/bangkok77/800/450" alt="Bangkok street food market">
+        <span class="card-badge food">Food</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Bangkok, Thailand</div>
+        <h2 class="card-title">Bangkok Street Food: The 12 Dishes You Absolutely Cannot Miss</h2>
+        <div class="card-meta">March 21, 2026</div>
+        <p class="card-excerpt">Pad krapow at midnight, mango sticky rice by the canal, and boat noodles so good I ordered them twice. This is how Bangkok tastes.</p>
+        <button class="card-link" data-id="4">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="adventure" data-id="5">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/morocco33/800/450" alt="Marrakech souk colors">
+        <span class="card-badge adventure">Adventure</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Marrakech, Morocco</div>
+        <h2 class="card-title">Getting Gloriously Lost in the Marrakech Medina</h2>
+        <div class="card-meta">February 9, 2026</div>
+        <p class="card-excerpt">Every turn hides a spice stall, a courtyard, a cat asleep on a carpet. I stopped trying to navigate and started following my nose instead.</p>
+        <button class="card-link" data-id="5">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="culture" data-id="6">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/santorini28/800/450" alt="Santorini blue domes sunset">
+        <span class="card-badge culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Santorini, Greece</div>
+        <h2 class="card-title">Santorini Without the Crowds: A Quieter Way to See the Island</h2>
+        <div class="card-meta">January 15, 2026</div>
+        <p class="card-excerpt">Arrive in October. Stay in Pyrgos, not Oia. Walk the Fira-to-Oia trail at 7am. That's how you get Santorini all to yourself.</p>
+        <button class="card-link" data-id="6">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="food" data-id="7">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/hanoi64/800/450" alt="Hanoi old quarter streets">
+        <span class="card-badge food">Food</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Hanoi, Vietnam</div>
+        <h2 class="card-title">48 Hours in Hanoi's Old Quarter and I'm Already Planning My Return</h2>
+        <div class="card-meta">December 3, 2025</div>
+        <p class="card-excerpt">Egg coffee at sunrise, bun cha for lunch, and a bowl of pho at a plastic stool on the pavement. Hanoi feeds you like nowhere else on earth.</p>
+        <button class="card-link" data-id="7">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+    <article class="post-card reveal" data-category="culture" data-id="8">
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://picsum.photos/seed/amalfi91/800/450" alt="Amalfi Coast cliffside road">
+        <span class="card-badge culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <div class="card-destination">Amalfi Coast, Italy</div>
+        <h2 class="card-title">Driving the Amalfi Coast: The Part Nobody Warns You About</h2>
+        <div class="card-meta">November 11, 2025</div>
+        <p class="card-excerpt">The road is one lane. The buses are enormous. And every hairpin bend opens onto a view so absurd you'll forget you're terrified.</p>
+        <button class="card-link" data-id="8">Read More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<!-- ─── Article Popup ─── -->
+<div class="popup-overlay" id="popup-overlay" aria-hidden="true">
+  <div class="popup-modal" id="popup-modal" role="dialog" aria-modal="true">
+    <div class="popup-head">
+      <button class="popup-back-btn" id="popup-back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+    </div>
+    <div class="popup-body" id="popup-body"></div>
+  </div>
+</div>
+
+<!-- ─── Footer ─── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">Wander With Suzy</div>
+    <div class="footer-socials">
+      <a href="#" class="social-link" aria-label="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="#" class="social-link" aria-label="YouTube">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+          <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="#" class="social-link" aria-label="Twitter / X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Wander With Suzy</span>
+      <a href="#" class="back-to-top">↑ Back to top</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Mobile nav ── */
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('nav-links');
+hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+/* ── Category filter ── */
+const filterBtns = document.querySelectorAll('.filter-btn');
+const cards      = document.querySelectorAll('.post-card');
+const countEl    = document.getElementById('visible-count');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    let visible = 0;
+    cards.forEach(card => {
+      const show = filter === 'all' || card.dataset.category === filter;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    countEl.textContent = visible;
+  });
+});
+
+/* ── Article data ── */
+const ARTICLES = {
+  1: {
+    title:       'The Perfect 5-Day Lisbon Itinerary (By Someone Who Never Left)',
+    destination: 'Lisbon, Portugal',
+    category:    'home',
+    badge:       'Home Base',
+    date:        'June 2, 2026',
+    img:         'https://picsum.photos/seed/lisbon42/1200/600',
+    body: `
+      <p>I booked a one-way flight to Lisbon on a Tuesday afternoon, in between meetings, with no real plan beyond "one month." That was five years ago. I've since watched the light change over the Tagus river at least a thousand times, and it still gets me every evening. If you're visiting, here is everything I know — earned the slow way.</p>
+
+      <h3>Day 1 — Alfama and the Art of Getting Lost</h3>
+      <p>Start in Alfama, Lisbon's oldest neighbourhood. Don't use Google Maps. The whole point of Alfama is wandering its steep, narrow lanes until you accidentally find a miradouro — a viewpoint — where someone's grandmother is hanging washing and a fado melody is leaking from a window below. Take Tram 28 once, for the experience, but walk back down: the tram is so crowded it no longer feels like transport, just tourism. End the evening at a taska — a tiny neighbourhood restaurant — where there's no menu on the wall and the waiter tells you what you're having. Bacalhau à brás if you're lucky.</p>
+
+      <h3>Day 2 — Belém and the Only Pastéis That Matter</h3>
+      <p>Take the 15E tram along the waterfront to Belém. Visit the Jerónimos Monastery (genuinely awe-inspiring, not tourist-brochure awe-inspiring). Then walk directly to Pastéis de Belém and join the queue. Yes, there's a queue. Yes, it moves quickly. Yes, eating a pastel de nata while still warm and dusted with cinnamon, standing outside a centuries-old monastery, is one of the better things you can do with your mouth. Order at least two.</p>
+
+      <h3>Day 3 — LX Factory and the Time Out Market</h3>
+      <p>Sunday is the best day for LX Factory, a former industrial complex now full of independent shops, studios, and one of the best bookshops I've ever been in — Ler Devagar, with its bicycles suspended from the ceiling and its towers of second-hand paperbacks. In the evening, resist the instinct to eat at Time Out Market and instead walk one block in any direction and sit down somewhere with a hand-written menu in the window. The market is fun, but Lisbon's real food is in the places that have been there forever.</p>
+
+      <h3>Day 4 — Sintra Day Trip</h3>
+      <p>The train from Rossio station takes forty minutes and costs almost nothing. Sintra is absurd in the best possible way: a town of fairy-tale palaces tucked into forested hills, where you round a corner expecting a café and find a castle instead. The Pena Palace is unmissable (the colours alone are worth the uphill walk). Monserrate garden is quieter and equally beautiful. Go on a weekday if you can — summer weekends belong to the tour buses.</p>
+
+      <blockquote>"Lisbon doesn't show off. It just exists, and somehow that's more beautiful than anything it could do on purpose."</blockquote>
+
+      <h3>Day 5 — Mouraria and Slow Mornings</h3>
+      <p>Mouraria is Alfama's quieter, less-photographed neighbour, and it's where I'd spend my last morning. The neighbourhood square, Largo do Intendente, has a beautiful tiled fountain and a handful of coffee shops where locals sit for hours. Order a galão (the Portuguese latte), eat a toasted cheese sandwich, and do nothing useful. Lisbon rewards the people who slow down. Then walk to Graça for one final sunset over the rooftops, and try not to cry when you have to leave.</p>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>The Lisboa Card covers all public transport and major museums — worth it for 3+ days</li>
+          <li>Book Jerónimos Monastery online in advance; the queues in summer are brutal</li>
+          <li>Stay in Mouraria or Graça, not in the tourist centre — better value and better vibes</li>
+          <li>The best pastéis de nata outside of Belém are at Manteigaria in Chiado</li>
+          <li>Uber works well; avoid unlicensed taxis from the airport</li>
+        </ul>
+      </div>
+    `
+  },
+  2: {
+    title:       'Chasing Sunrise at Tegalalang: What No One Tells You',
+    destination: 'Bali, Indonesia',
+    category:    'adventure',
+    badge:       'Adventure',
+    date:        'May 18, 2026',
+    img:         'https://picsum.photos/seed/bali88/1200/600',
+    body: `
+      <p>The alarm goes off at 3:45am and the first thing you think is: this had better be worth it. The second thing you think, about ninety minutes later when you're standing in the dark on the edge of a rice terrace as the sky turns from black to violet to gold, is: it is absolutely worth it. Tegalalang is overrun with tourists by 8am. But at first light, it's one of the most quietly magnificent things I've ever seen.</p>
+
+      <h3>The Reality Nobody Posts About</h3>
+      <p>Here's what the Instagram grid doesn't tell you: the popular section of Tegalalang, around the main road, is extraordinarily touristy by mid-morning. There are entry fees, hawkers, and a café that charges twelve dollars for a coffee positioned in front of the good view. None of this matters if you arrive early — but the moment tourists start showing up, the atmosphere shifts. My advice is to be leaving just as the tour buses arrive. That means a 4am start from Ubud (a twenty-minute drive), time to walk in the near-dark, and a sunrise that costs nothing.</p>
+
+      <h3>Walk Left, Not Right</h3>
+      <p>When you arrive at the main entry point, almost everyone turns right toward the famous stepped terraces. Turn left instead. Walk along the ridge path for ten minutes and you'll find yourself alone — genuinely alone — looking over a valley of green. The terraces here are older, less groomed, more real. Roosters somewhere below. The sound of water through irrigation channels. A farmer checking his crop in the early light. Bring a sarong to sit on, a water bottle, and no agenda.</p>
+
+      <h3>After the Sunrise: The Rest of the Morning</h3>
+      <p>By 8am you'll be hungry and the best warung (small local restaurant) in the area is a ten-minute walk north of the main road — look for the hand-painted sign and the plastic chairs. Nasi goreng and fresh coconut cost less than two euros. Then drive to Kintamani volcano for the views, or head back to Ubud and sleep until noon. You've earned it.</p>
+
+      <blockquote>"The terraces aren't a backdrop. They're a working landscape. When you remember that, they become something else entirely."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>Hire a driver the night before — Gojek and Grab don't always work at 4am in rural areas</li>
+          <li>Bring insect repellent; mosquitoes are active before sunrise</li>
+          <li>Wear closed shoes — the paths can be muddy and steep</li>
+          <li>The entry donation is around 50,000 IDR (about €3); have cash</li>
+          <li>Skip the swing over the rice fields — it's expensive and completely manufactured</li>
+        </ul>
+      </div>
+    `
+  },
+  3: {
+    title:       'Tokyo in Cherry Blossom Season: A Love Letter',
+    destination: 'Tokyo, Japan',
+    category:    'culture',
+    badge:       'Culture',
+    date:        'April 4, 2026',
+    img:         'https://picsum.photos/seed/tokyo55/1200/600',
+    body: `
+      <p>I've been to Tokyo three times now. The first time, I arrived in October and thought I understood the city. The second time, I came in February for a work trip and barely saw daylight. The third time, I arrived on the 28th of March, checked the cherry blossom forecast obsessively for two weeks beforehand, and timed it almost perfectly. Full bloom hit on April 1st. I was there. I understand now why people plan their entire year around this.</p>
+
+      <h3>Hanami — The Art of Flower Viewing</h3>
+      <p>Hanami literally means "flower viewing," and it's both simpler and more profound than it sounds. Japanese people take time off work, gather in parks with bento boxes and canned beer, and sit under the blossoms for hours. There's no Instagram agenda to it — or there wasn't, until recently. The older couples picnicking under the trees, the salarymen loosening their ties, the children chasing petals — this is hanami at its best. Join it rather than photograph it. The photos are never as good as the memory anyway.</p>
+
+      <h3>The Parks You Actually Want</h3>
+      <p>Ueno Park is the most famous and therefore the most crowded — but at 6am, before the vendors arrive and the tarpaulins go down, it's extraordinary. Shinjuku Gyoen is the most beautiful garden, with early-blooming and late-blooming varieties that extend the season by nearly two weeks. Yoyogi Park is where you go if you want to feel like a local: families, dogs, someone playing guitar badly, someone playing guitar brilliantly. Avoid Meguro River during peak daytime hours unless you enjoy walking in a slow-moving queue while holding your phone above your head.</p>
+
+      <h3>What to Eat During Sakura Season</h3>
+      <p>The konbini (convenience store) comes into its own during hanami season — cherry blossom onigiri, sakura mochi, and pink-tinted everything fills the shelves. But the best thing I ate was from a small cart near Shinjuku Gyoen: mitarashi dango, skewers of grilled rice dumplings glazed with a sweet soy sauce. Three dumplings, two minutes, 150 yen, life changed. Don't overlook the convenience store sushi either. I know how that sounds. Trust me.</p>
+
+      <blockquote>"There's a Japanese concept, mono no aware — the bittersweet awareness of impermanence. Cherry blossoms are its symbol. They bloom for about a week. That's the whole point."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>Book accommodation 3–4 months ahead; Tokyo fills up fast during peak bloom</li>
+          <li>Follow the Japan Meteorological Corporation's sakura forecast — it's remarkably accurate</li>
+          <li>Get a Suica card from the airport; it works on all trains, buses, and most vending machines</li>
+          <li>Peak bloom lasts 7–10 days; plan for the first week of April as your target</li>
+          <li>The Tokyo National Museum in Ueno is free on hanami days — a beautiful combination</li>
+        </ul>
+      </div>
+    `
+  },
+  4: {
+    title:       'Bangkok Street Food: The 12 Dishes You Absolutely Cannot Miss',
+    destination: 'Bangkok, Thailand',
+    category:    'food',
+    badge:       'Food',
+    date:        'March 21, 2026',
+    img:         'https://picsum.photos/seed/bangkok77/1200/600',
+    body: `
+      <p>I came to Bangkok for four days and stayed for three weeks. This was not a planned extension. It happened because I kept finding another dish I needed to try, another market I hadn't seen, another cart that appeared only on Tuesday evenings near a canal I'd never heard of. Bangkok doesn't feed you — it devours you, gently, from the outside in.</p>
+
+      <h3>The Dishes: Morning</h3>
+      <p><strong>Jok (congee):</strong> Start the day the way locals do — a bowl of thick rice porridge with ginger, spring onion, a soft egg, and your choice of pork or fish. It's soft and warm and deeply comforting. The best bowl I had was from a cart near Chinatown at 7am, from a woman who'd been making it for thirty years and had no English and didn't need any. <strong>Pa thong ko (fried dough):</strong> The Thai version of the Chinese cruller, eaten dipped in sweetened condensed milk or pandan sauce. Find it at the morning markets near Chatuchak. <strong>Khao tom (rice soup):</strong> Lighter than congee, more brothy, served with a plate of condiments to adjust as you eat. Underrated by tourists, beloved by everyone else.</p>
+
+      <h3>The Dishes: Midday</h3>
+      <p><strong>Pad kra pao (basil stir-fry):</strong> The most important dish in Thailand. Holy basil, minced pork or chicken, fish sauce, oyster sauce, chilli, and a fried egg on top over rice. Available everywhere, brilliant almost everywhere, transcendent in the right hands. Don't order it mild. <strong>Som tam (green papaya salad):</strong> Shredded green papaya pounded in a mortar with fish sauce, lime, palm sugar, dried shrimp, and whatever heat level you can handle. Order it "Thai spicy" only if you know what you're doing. <strong>Boat noodles:</strong> Tiny bowls of intense, rich broth with noodles, pork or beef, and blood — yes, blood, which gives it depth — served from actual boats on the canals of Ayutthaya, or from stalls near Victory Monument. Four bowls minimum. They're that small and that good.</p>
+
+      <h3>The Dishes: Evening and Night</h3>
+      <p><strong>Mango sticky rice:</strong> Sweet rice cooked in coconut milk, topped with fresh ripe mango and a drizzle of salted coconut cream. Available year-round but transcendent during mango season (April–June). <strong>Pad Thai:</strong> Yes, it's touristy. The real version — from a street cart, not a restaurant, made to order in a screaming hot wok — is one of the great dishes of the world. Look for the ones with the longest queue of Thai people. <strong>Grilled pork skewers (moo ping):</strong> Marinated in garlic, coriander root, and fish sauce, grilled over charcoal, eaten standing up at a plastic table with sticky rice. This is Bangkok at its most honest. <strong>Roti:</strong> The Muslim quarter of Bangkok does an extraordinary flatbread, either savoury (with egg and condensed milk) or sweet (banana, Nutella, terrifying combinations that somehow work). <strong>Tom yum goong:</strong> The famous sour-spicy prawn soup. Order it in a clay pot at a proper restaurant. <strong>Khao niao mamuang:</strong> See mango sticky rice. Order it again.</p>
+
+      <blockquote>"Bangkok taught me that the best food in the world doesn't have a Michelin star or a reservation system. It has a plastic stool, a hand-written sign, and forty years of practice."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>Chinatown (Yaowarat) at night is one of the best food streets on earth — go hungry</li>
+          <li>Chatuchak Weekend Market for morning eating; Or Tor Kor Market for the best produce</li>
+          <li>Avoid restaurant pad Thai near tourist areas; seek out cart pad Thai near BTS stations</li>
+          <li>Carry cash — the best stalls don't take cards</li>
+          <li>Download the Wongnai app (Thai Yelp) for local recommendations your guidebook won't have</li>
+        </ul>
+      </div>
+    `
+  },
+  5: {
+    title:       'Getting Gloriously Lost in the Marrakech Medina',
+    destination: 'Marrakech, Morocco',
+    category:    'adventure',
+    badge:       'Adventure',
+    date:        'February 9, 2026',
+    img:         'https://picsum.photos/seed/morocco33/1200/600',
+    body: `
+      <p>My riad was five minutes from Jemaa el-Fna square, or so the map told me. On the first evening, it took forty-five minutes. On the second evening, twenty. By the fourth day I was cutting through alleys I'd never noticed, dodging motorbikes, nodding to the same spice vendor who'd been watching my orientation improve with apparent amusement. The medina is designed to disorient. Once you accept that, it becomes the best game in the world.</p>
+
+      <h3>The Souks: Don't Buy Anything on Day One</h3>
+      <p>The souks — the covered market streets — are organised loosely by trade: spice sellers here, leather workers there, lantern makers around that corner, weavers in that dimly lit passage. Everything is beautiful and everything is aggressively priced for tourists. The key is time. Walk the souks on your first day without buying anything — just look, touch, smell, negotiate nothing. By day two, you'll know what you actually want, and you'll have a feel for what things cost. Bargaining is expected and is itself an art form. Start at thirty percent of the asking price. Be polite. Walk away slowly. The price will drop.</p>
+
+      <h3>Riads and the Architecture of Secrets</h3>
+      <p>A riad is a traditional Moroccan house built around an interior courtyard, often with a garden or fountain at its centre. From the outside they're invisible — an unmarked door in an alley wall. Inside, they open into something breathtaking: tiled floors, carved plasterwork, arched doorways, and an open sky above. Staying in one is the only way to sleep in Marrakech. The contrast between the chaos of the streets and the cool, silent interior is one of the most satisfying things I've experienced in any city. I sat in the courtyard of my riad every morning with a pot of mint tea and felt like time had reorganised itself entirely.</p>
+
+      <h3>Jemaa el-Fna at Dusk</h3>
+      <p>The main square is a theatre that changes its show every few hours. In the afternoon: orange juice vendors, snake charmers (ethically dubious — I'd skip the snakes), and henna artists. At sunset: the smoke from a hundred food stalls rolling across the square as the call to prayer echoes from the Koutoubia Mosque. At night: a carnival of noise and light, storytellers and musicians, the smell of lamb and cumin and charcoal. Eat dinner at one of the rooftop restaurants overlooking the square, then come back down and walk through the stalls. Order the lamb tangia if it's available. It cooks underground for twelve hours and tastes like it.</p>
+
+      <blockquote>"The medina has been disorienting visitors for eight centuries. You're not lost — you're just participating in the tradition."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>Hire a guide for your first morning — the medina makes much more sense with context</li>
+          <li>The tanneries are best viewed from the leather shop balconies (they give you mint to hold under your nose)</li>
+          <li>Drink the mint tea everywhere; accept every invitation — refusal is sometimes impolite</li>
+          <li>Book your riad well in advance for winter/spring; the best ones fill months ahead</li>
+          <li>Keep small change (dirhams) for tipping anyone who helps you find your way</li>
+        </ul>
+      </div>
+    `
+  },
+  6: {
+    title:       'Santorini Without the Crowds: A Quieter Way to See the Island',
+    destination: 'Santorini, Greece',
+    category:    'culture',
+    badge:       'Culture',
+    date:        'January 15, 2026',
+    img:         'https://picsum.photos/seed/santorini28/1200/600',
+    body: `
+      <p>I went to Santorini in October, which is apparently the thing you're supposed to do if you've done your research. The summer crowds had thinned to almost nothing, the prices had dropped by forty percent, and the light — the famous, golden, late-afternoon Aegean light — was even better than in the photographs. I also found, somewhat to my surprise, that I preferred the island without its mythology. When you're not fighting for a spot on a wall to watch the sunset, you can actually watch the sunset.</p>
+
+      <h3>Stay in Pyrgos, Not Oia</h3>
+      <p>Oia is the postcard — the blue domes, the white walls, the sunset that brings hundreds of people to the same viewpoint with their cameras raised. It's genuinely beautiful. It is also not relaxing. Pyrgos is an inland village at the island's highest point, with a ruined Venetian castle at its summit and almost no tourists. The views from the castle walls at sunset are, in my opinion, better than anything in Oia — wider, quieter, with the whole caldera spread out below you and no crowds jostling for position. The village's main kafeneion serves excellent local wine at honest prices. Sit there for an hour with a carafe of Assyrtiko and watch the village cats conduct their evening affairs.</p>
+
+      <h3>The Fira-to-Oia Trail</h3>
+      <p>The ten-kilometre path along the caldera rim connects Fira to Oia and takes about three hours at a gentle pace. Walk it at 7am. The light is extraordinary, the path is empty, and you arrive in Oia before the tourists have finished their hotel breakfasts. Wear proper shoes — the path is uneven and occasionally steep. Bring more water than you think you need. The views across the caldera, with the volcanic islands in the middle and the sea going on forever in every direction, are among the most beautiful I've encountered anywhere. Then eat a proper breakfast in Oia before anyone else is awake, and feel smugly excellent about yourself for the rest of the day.</p>
+
+      <h3>The Villages They Don't Photograph</h3>
+      <p>Megalochori is almost entirely unvisited and has one of the best preserved belfries on the island. Akrotiri (the Bronze Age archaeological site, not the village) is genuinely one of the most impressive sites in the Mediterranean — a Minoan city preserved under volcanic ash for 3,600 years, with frescoes still in colour. Emporio has a medieval maze of a village centre where the buildings were designed to confuse invaders. Spend a morning getting confused alongside them.</p>
+
+      <blockquote>"Santorini will always be photogenic. The question is whether you want to photograph it, or live in it for a few days. I chose the second option and got better photographs anyway."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>October is ideal: warm, quiet, cheaper, and the light is extraordinary</li>
+          <li>Hire a car or ATV — the bus system is slow and the island rewards spontaneous detours</li>
+          <li>Drink the local Assyrtiko white wine; Santorini's volcanic soil produces something genuinely unique</li>
+          <li>The Akrotiri site needs a morning; go early and take your time in the newer excavation hall</li>
+          <li>Book the Fira-to-Oia trail as an early-morning walk, not an afternoon one</li>
+        </ul>
+      </div>
+    `
+  },
+  7: {
+    title:       '48 Hours in Hanoi\'s Old Quarter and I\'m Already Planning My Return',
+    destination: 'Hanoi, Vietnam',
+    category:    'food',
+    badge:       'Food',
+    date:        'December 3, 2025',
+    img:         'https://picsum.photos/seed/hanoi64/1200/600',
+    body: `
+      <p>Hanoi takes about twenty minutes to get under your skin and about two days to realise you've fallen completely in love with it. The city is chaotic in the specific way of places that have been continuously inhabited for a thousand years — the streets of the Old Quarter were originally organised by trade guilds, and some of them still are: Hang Bac for silver, Hang Gai for silk, Hang Ma for paper goods and offerings. The motorbikes are everywhere and the crossing of streets requires a specific kind of meditative surrender. Worth every second of it.</p>
+
+      <h3>Morning: Egg Coffee and the Lake</h3>
+      <p>Hanoi's signature drink is cà phê trứng — egg coffee — and it's as strange and wonderful as it sounds: a thick, slightly sweet custard of whisked egg yolk and condensed milk sitting on top of a strong Vietnamese coffee. The original is from Café Giang on a small alley off Hang Gai street, and it has been made the same way since 1946. Order two. Then walk to Hoan Kiem Lake for the morning tai chi — hundreds of people exercising in slow synchrony around a lake with a small temple on an island in the middle. The red bridge to Ngoc Son Temple is one of the most photographed spots in Vietnam. Visit it at 7am and you'll understand why.</p>
+
+      <h3>Lunch: The Plastic Stool Protocol</h3>
+      <p>The rule in Hanoi is simple: the lower the stool, the better the food. Bun cha — grilled pork patties in a light broth with vermicelli and herbs — is eaten on the street at lunchtime, on the kind of tiny plastic furniture that makes you feel enormous. The meal costs about 50,000 dong (roughly €2) and is magnificent. Bun cha Huong Lien on Le Van Huu street is the most famous, because Obama and Anthony Bourdain ate there in 2016. It's good but busy; I prefer a less-famous spot on Hang Manh. Find it by following the smell of charcoal smoke around 11:30am.</p>
+
+      <h3>Evening: Pho and the Night Market</h3>
+      <p>Pho is a morning or evening dish in Hanoi (not lunch — lunch is bun cha). The broth has been simmering since before dawn: star anise, ginger, charred onion, cinnamon, clove, and a patience that produces something so complex it makes French onion soup look like an afterthought. Pho Thin on Dinh Tien Hoang is the benchmark version in Hanoi — always open, always packed, always perfect. After pho, walk the Old Quarter night market (Friday–Sunday, Hang Dao street) for local crafts, street food, and the specific pleasure of being jostled by a city that loves being alive.</p>
+
+      <blockquote>"Vietnamese food isn't complicated — it's precise. The difference is everything."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>Cross the street by walking slowly and steadily — motorbikes will flow around you</li>
+          <li>The Old Quarter is compact and best explored entirely on foot</li>
+          <li>Try bun cha for lunch, pho for evening, banh mi from a street cart for breakfast</li>
+          <li>Café Giang for egg coffee: arrive before 9am or expect a queue</li>
+          <li>The Temple of Literature is worth a half-morning; go on a weekday</li>
+        </ul>
+      </div>
+    `
+  },
+  8: {
+    title:       'Driving the Amalfi Coast: The Part Nobody Warns You About',
+    destination: 'Amalfi Coast, Italy',
+    category:    'culture',
+    badge:       'Culture',
+    date:        'November 11, 2025',
+    img:         'https://picsum.photos/seed/amalfi91/1200/600',
+    body: `
+      <p>Nobody warned me that the road along the Amalfi Coast is essentially a single lane with delusions of grandeur. Nobody mentioned the buses. I had read approximately seven articles about the Amalfi Coast before I drove it, and not one of them had prepared me for the experience of reversing into a niche in the cliff wall to let a full-size SITA bus squeeze past while a Neapolitan driver directly behind me conveyed his feelings about the delay via horn. It was the best drive of my life. I would do it again immediately.</p>
+
+      <h3>The SS163: What to Expect</h3>
+      <p>The Nastro Azzurro — the Blue Ribbon — is what they call the coastal road, and it earns the name: fifty kilometres of switchbacks blasted into limestone cliffs above a sea of impossible blue. The road is narrow. The drops are vertical. The views that open around each corner — terraced lemon groves, pink villages tumbling toward the water, fishing boats below — are so beautiful you will want to stop driving and simply stare, which is not advisable since there are buses. Drive it eastbound (Sorrento to Amalfi) in the morning, when the sun is behind you and the sea is in front. Drive slowly. Pull into every possible layby. Consider hiring a driver for at least the first pass, so you can actually look.</p>
+
+      <h3>The Towns Worth Stopping For</h3>
+      <p>Positano is the most photographed, with its pink-and-white houses cascading to a small beach. It's also the most expensive and the most crowded in summer. Go anyway — walk down to the beach at 8am before the day-trippers arrive. Praiano is Positano's quieter neighbour, half an hour east, with the same views for a fraction of the price. Ravello, up in the hills above Amalfi town, is where D.H. Lawrence and Wagner and Virginia Woolf all came to think. The gardens of Villa Cimbrone have a terrace at their end called the Terrace of Infinity. The name is not an exaggeration. Amalfi town itself — the medieval cathedral, the paper museum, the tiny bars in the alleyways — earns a full afternoon.</p>
+
+      <h3>The Lemons</h3>
+      <p>The Sfusato Amalfitano is the local lemon variety, and it's larger than your face, with a thick pith and an extraordinary floral scent. They're used in limoncello, in lemon pasta, in lemon granita, in everything. Buy a bag from a roadside stall and eat them like oranges, which sounds mad and tastes miraculous. The limoncello served cold in a small ceramic bottle at the end of a meal is not optional. It is medicine. It is tradition. It is the correct ending to every dinner on this coast.</p>
+
+      <blockquote>"The Amalfi Coast is simultaneously the most terrifying and most beautiful drive I have ever done. I recommend it without reservation to anyone who is comfortable with controlled fear."</blockquote>
+
+      <div class="tip-box">
+        <strong>Practical Notes</strong>
+        <ul>
+          <li>Drive a small car — anything wider than a Fiat 500 will cause you genuine distress</li>
+          <li>The SITA buses are cheap and frequent if you'd rather not drive; book tickets in advance</li>
+          <li>September and October are better than July–August: cooler, quieter, same views</li>
+          <li>Stay in Praiano or Atrani for better prices and a more local experience</li>
+          <li>The hike from Bomerano to Positano (Path of the Gods) is one of the best day hikes in Europe</li>
+        </ul>
+      </div>
+    `
+  }
+};
+
+/* ── Popup logic ── */
+const overlay   = document.getElementById('popup-overlay');
+const modal     = document.getElementById('popup-modal');
+const popupBody = document.getElementById('popup-body');
+const backBtn   = document.getElementById('popup-back-btn');
+
+function openPopup(id) {
+  const a = ARTICLES[id];
+  if (!a) return;
+
+  popupBody.innerHTML = `
+    <img class="article-img" src="${a.img}" alt="${a.title}">
+    <div class="article-content">
+      <span class="article-badge ${a.category}">${a.badge}</span>
+      <span class="article-dest">${a.destination}</span>
+      <h2 class="article-title">${a.title}</h2>
+      <div class="article-meta">${a.date}</div>
+      <div class="article-body">${a.body}</div>
+    </div>
+  `;
+
+  popupBody.scrollTop = 0;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('popup-open');
+}
+
+function closePopup() {
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('popup-open');
+}
+
+/* Open on Read More button click */
+document.querySelectorAll('.card-link').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    openPopup(btn.dataset.id);
+  });
+});
+
+/* Also open when clicking the card itself (except on the button, handled above) */
+document.querySelectorAll('.post-card').forEach(card => {
+  card.addEventListener('click', () => openPopup(card.dataset.id));
+});
+
+/* Close on Back button */
+backBtn.addEventListener('click', closePopup);
+
+/* Close on overlay click (but not modal click) */
+overlay.addEventListener('click', e => {
+  if (e.target === overlay) closePopup();
+});
+
+/* Close on Escape key */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePopup();
+});
+
+/* ─── Scroll Reveal ─── */
+(function () {
+  document.querySelectorAll('.reveal-stagger').forEach(function (group) {
+    Array.from(group.children).filter(function (c) {
+      return c.classList.contains('reveal');
+    }).forEach(function (el, i) { el.style.transitionDelay = (i * 110) + 'ms'; });
+  });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+}());
+</script>
+</body>
+</html>

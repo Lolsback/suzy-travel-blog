@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Wander With Suzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FFF8F0;
+      --coral: #FF6B6B;
+      --green: #2D6A4F;
+      --dark: #1a1a1a;
+      --muted: #777;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 248, 240, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 107, 107, 0.12);
+      padding: 0 2.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--green);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--coral); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--dark);
+      transition: all 0.3s;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(160deg, #FFF8F0 0%, #FFEEDD 55%, #FFE4CC 100%);
+      min-height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3.5rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 600px 400px at 80% 20%, rgba(255,107,107,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 350px at 10% 80%, rgba(45,106,79,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* avatar + eyebrow pinned to the left, vertically centered */
+    .hero-left {
+      position: absolute;
+      left: 4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 1;
+    }
+
+    /* h1 + role centered in the full header */
+    .hero-center {
+      position: relative;
+      text-align: center;
+      z-index: 1;
+    }
+
+    /* circular headshot */
+    .avatar-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 5px solid white;
+      box-shadow: 0 12px 40px rgba(255, 107, 107, 0.2);
+    }
+
+    /* coral ring decoration */
+    .avatar-ring {
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 107, 107, 0.35);
+      animation: spin-slow 18s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes spin-slow {
+      to { transform: rotate(360deg); }
+    }
+
+    /* small leaf accent */
+    .avatar-leaf {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      border-radius: 50%;
+      border: 3px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .hero-eyebrow {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--coral);
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      color: var(--green);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--coral);
+    }
+
+    .hero-role {
+      font-size: 0.97rem;
+      color: var(--muted);
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    /* ── Bio section ── */
+    .bio-section {
+      padding: 5rem 2.5rem;
+      max-width: 740px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--coral);
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.9rem, 4vw, 2.6rem);
+      color: var(--green);
+      line-height: 1.2;
+      margin-bottom: 2rem;
+    }
+
+    .bio-text {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: #444;
+      font-weight: 300;
+    }
+
+    .bio-text + .bio-text {
+      margin-top: 1.4rem;
+    }
+
+    .bio-text strong {
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    /* decorative quote pull */
+    .pull-quote {
+      border-left: 3px solid var(--coral);
+      padding: 0.6rem 1.4rem;
+      margin: 2.5rem 0;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--green);
+      line-height: 1.6;
+    }
+
+    /* ── Stats section ── */
+    .stats-section {
+      background: white;
+      padding: 5rem 2.5rem;
+    }
+
+    .stats-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .stats-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--cream);
+      border-radius: 18px;
+      padding: 2.4rem 1.5rem 2rem;
+      text-align: center;
+      border: 1px solid rgba(255, 107, 107, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.28s, box-shadow 0.28s;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--coral), var(--green));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.09);
+    }
+
+    .stat-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .stat-icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.8rem;
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--coral);
+      line-height: 1;
+      margin-bottom: 0.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    /* ── Newsletter section ── */
+    .newsletter-section {
+      padding: 6rem 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .newsletter-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 700px 400px at 50% 50%, rgba(255,107,107,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .newsletter-inner {
+      position: relative;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .newsletter-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .newsletter-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--green);
+      line-height: 1.15;
+      margin-bottom: 0.9rem;
+    }
+
+    .newsletter-title em {
+      font-style: italic;
+      color: var(--coral);
+    }
+
+    .newsletter-sub {
+      font-size: 0.97rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 300;
+      margin-bottom: 2.2rem;
+    }
+
+    /* form */
+    .newsletter-form {
+      display: flex;
+      gap: 0;
+      max-width: 440px;
+      margin: 0 auto;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(255, 107, 107, 0.18);
+    }
+
+    .email-input {
+      flex: 1;
+      border: 2px solid transparent;
+      border-right: none;
+      border-radius: 50px 0 0 50px;
+      padding: 0.9rem 1.4rem;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.92rem;
+      background: white;
+      color: var(--dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .email-input::placeholder { color: #bbb; }
+
+    .email-input:focus {
+      border-color: rgba(255, 107, 107, 0.4);
+    }
+
+    .subscribe-btn {
+      padding: 0.9rem 1.8rem;
+      background: var(--coral);
+      color: white;
+      border: none;
+      border-radius: 0 50px 50px 0;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .subscribe-btn:hover {
+      background: #e85555;
+      transform: scale(1.03);
+    }
+
+    .subscribe-btn:active { transform: scale(0.98); }
+
+    /* validation hint */
+    .form-hint {
+      font-size: 0.76rem;
+      color: var(--coral);
+      margin-top: 0.6rem;
+      min-height: 1.1rem;
+      transition: opacity 0.2s;
+    }
+
+    /* success state */
+    .success-msg {
+      display: none;
+      background: white;
+      border-radius: 18px;
+      padding: 2.2rem 2rem;
+      box-shadow: 0 10px 40px rgba(45,106,79,0.12);
+      border: 1px solid rgba(45,106,79,0.15);
+      animation: fade-in-up 0.45s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+    }
+
+    @keyframes fade-in-up {
+      0%   { opacity: 0; transform: translateY(20px) scale(0.92); }
+      55%  { opacity: 1; transform: translateY(-7px) scale(1.04); }
+      80%  { transform: translateY(3px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .confetti-dot {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    @keyframes confetti-burst {
+      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+    }
+
+    .success-emoji {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 0.7rem;
+    }
+
+    .success-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      color: var(--green);
+      line-height: 1.4;
+    }
+
+    .success-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--cream);
+      border-top: 3px solid var(--green);
+      padding: 2.8rem 2rem;
+      text-align: center;
+    }
+    .footer-inner { max-width: 600px; margin: 0 auto; }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--dark);
+      margin-bottom: 1.4rem;
+    }
+    .footer-socials {
+      display: flex;
+      justify-content: center;
+      gap: 0.9rem;
+      margin-bottom: 1.6rem;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--coral);
+      color: var(--coral);
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .social-link:hover { background: var(--coral); color: white; }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-copy { font-size: 0.78rem; color: var(--muted); }
+    .back-to-top {
+      font-size: 0.78rem;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+    }
+    .back-to-top:hover { color: var(--coral); }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      nav { padding: 0 1.25rem; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(255,248,240,0.98);
+        padding: 1rem 1.5rem 1.5rem;
+        border-bottom: 1px solid rgba(255,107,107,0.12);
+        gap: 1rem;
+      }
+
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+
+      .hero {
+        min-height: auto;
+        padding: 3.5rem 1.25rem;
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+      }
+      .hero-left {
+        position: static;
+        transform: none;
+        align-items: center;
+      }
+      .hero-center { text-align: center; }
+      .bio-section { padding: 3.5rem 1.25rem; }
+      .stats-section { padding: 3.5rem 1.25rem; }
+      .newsletter-section { padding: 4rem 1.25rem; }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .newsletter-form {
+        flex-direction: column;
+        border-radius: 14px;
+        overflow: visible;
+        box-shadow: none;
+        gap: 0.75rem;
+      }
+
+      .email-input {
+        border: 2px solid rgba(0,0,0,0.1);
+        border-radius: 50px;
+        text-align: center;
+      }
+
+      .email-input:focus { border-color: var(--coral); }
+
+      .subscribe-btn {
+        border-radius: 50px;
+        padding: 0.95rem;
+        box-shadow: 0 8px 24px rgba(255, 107, 107, 0.28);
+      }
+    }
+  /* ─── Scroll Reveal ─── */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ─── Navigation ─── -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">Wander With Suzy</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ─── Hero ─── -->
+<section class="hero">
+  <!-- avatar + eyebrow: absolutely pinned to the left -->
+  <div class="hero-left">
+    <div class="avatar-wrap">
+      <div class="avatar-ring"></div>
+      <img
+        class="avatar"
+        src="https://picsum.photos/seed/suzy-portrait/320/320"
+        alt="Suzy — Wander With Suzy"
+      >
+      <div class="avatar-leaf">🌿</div>
+    </div>
+  </div>
+
+  <!-- eyebrow + h1 + role: centered in the full header -->
+  <div class="hero-center reveal">
+    <span class="hero-eyebrow">✦ The face behind the lens</span>
+    <h1 class="hero-name">Hi, I'm <em>Suzy</em></h1>
+    <p class="hero-role">Travel Blogger · Photographer · Lisbon-Based Wanderer</p>
+  </div>
+</section>
+
+<!-- ─── Bio ─── -->
+<section class="bio-section">
+  <span class="section-label">My Story</span>
+  <h2 class="section-title reveal">From a One-Way Ticket<br>to a Way of Life</h2>
+
+  <p class="bio-text reveal">
+    It started with a <strong>one-way flight to Lisbon</strong> and a suitcase I packed in forty minutes. I had a vague plan, a shaky grasp of Portuguese, and absolutely no idea that I'd still be here — or rather, everywhere — five years later. What began as a sabbatical from a London desk job became something I can only describe as a complete reordering of priorities. I traded the commute for cobblestones, the office kitchen for tascas that don't have menus, and the certainty of a paycheque for the gloriously uncertain art of slow travel.
+  </p>
+
+  <blockquote class="pull-quote reveal">
+    "I don't travel to escape life. I travel because this <em>is</em> my life."
+  </blockquote>
+
+  <p class="bio-text reveal">
+    <strong>Wander With Suzy</strong> is where I put it all down — the planning guides and the disasters, the budget hacks and the splurges, the meals I'll remember forever and the hostels I'm trying to forget. I write for the curious, the indecisive, and the chronically over-packed. I've navigated Bangkok's night markets at midnight, chased cherry blossoms across three Tokyo parks in one morning, and once got so lost in the Marrakech medina that a cat had to show me the way out. I'm not an expert; I'm just someone who keeps going, keeps taking notes, and keeps sharing the view.
+  </p>
+</section>
+
+<!-- ─── Stats ─── -->
+<section class="stats-section" id="stats">
+  <div class="stats-inner">
+    <div class="stats-header reveal">
+      <span class="section-label">By the Numbers</span>
+      <h2 class="section-title" style="margin-bottom:0;">Travel Stats</h2>
+    </div>
+
+    <div class="stats-grid reveal-stagger">
+
+      <div class="stat-card reveal">
+        <span class="stat-icon">🌍</span>
+        <div class="stat-number">8</div>
+        <div class="stat-label">Countries</div>
+      </div>
+
+      <div class="stat-card reveal">
+        <span class="stat-icon">✈️</span>
+        <div class="stat-number">47,000<span style="font-size:0.55em;"> km</span></div>
+        <div class="stat-label">Kilometers Flown</div>
+      </div>
+
+      <div class="stat-card reveal">
+        <span class="stat-icon">🗓️</span>
+        <div class="stat-number">2</div>
+        <div class="stat-label">Years on the Road</div>
+      </div>
+
+      <div class="stat-card reveal">
+        <span class="stat-icon">✍️</span>
+        <div class="stat-number">156</div>
+        <div class="stat-label">Posts Published</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── Newsletter ─── -->
+<section class="newsletter-section" id="newsletter">
+  <div class="newsletter-inner reveal">
+    <span class="newsletter-icon">✉️</span>
+    <h2 class="newsletter-title">Join the <em>Journey</em></h2>
+    <p class="newsletter-sub">
+      New destinations, honest guides, and the occasional story I was too embarrassed to post anywhere else — straight to your inbox. No spam, ever.
+    </p>
+
+    <form class="newsletter-form" id="newsletter-form" novalidate>
+      <input
+        class="email-input"
+        id="email-input"
+        type="email"
+        placeholder="your@email.com"
+        autocomplete="email"
+        aria-label="Email address"
+      >
+      <button class="subscribe-btn" type="submit">Subscribe</button>
+    </form>
+    <p class="form-hint" id="form-hint" aria-live="polite"></p>
+
+    <div class="success-msg" id="success-msg" role="alert">
+      <span class="success-emoji">🎉</span>
+      <p class="success-text">You're in! Check your inbox for adventures.</p>
+      <p class="success-sub">Welcome to the Wander With Suzy community.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ─── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">Wander With Suzy</div>
+    <div class="footer-socials">
+      <a href="#" class="social-link" aria-label="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="#" class="social-link" aria-label="YouTube">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+          <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="#" class="social-link" aria-label="Twitter / X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Wander With Suzy</span>
+      <a href="#" class="back-to-top">↑ Back to top</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Mobile nav ── */
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('nav-links');
+
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  /* ── Newsletter form ── */
+  const form       = document.getElementById('newsletter-form');
+  const emailInput = document.getElementById('email-input');
+  const hint       = document.getElementById('form-hint');
+  const successMsg = document.getElementById('success-msg');
+
+  const isValidEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
+  emailInput.addEventListener('input', () => {
+    hint.textContent = '';
+  });
+
+  function launchConfetti(btn) {
+    const rect   = btn.getBoundingClientRect();
+    const cx     = rect.left + rect.width  / 2;
+    const cy     = rect.top  + rect.height / 2;
+    const colors = ['#FF6B6B', '#2D6A4F', '#FF6B6B', '#2D6A4F', '#FF9E9E', '#52B788'];
+    colors.forEach((color, i) => {
+      const dot = document.createElement('div');
+      dot.className        = 'confetti-dot';
+      dot.style.left       = (cx - 4) + 'px';
+      dot.style.top        = (cy - 4) + 'px';
+      dot.style.background = color;
+      const angle = (i / colors.length) * 2 * Math.PI - Math.PI / 2;
+      const dist  = 55 + Math.random() * 35;
+      dot.style.setProperty('--tx', Math.round(Math.cos(angle) * dist) + 'px');
+      dot.style.setProperty('--ty', Math.round(Math.sin(angle) * dist) + 'px');
+      dot.style.animation  = `confetti-burst 0.65s ease-out ${i * 40}ms forwards`;
+      document.body.appendChild(dot);
+      setTimeout(() => dot.remove(), 800 + i * 40);
+    });
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    if (!emailInput.value.trim()) {
+      hint.textContent = 'Please enter your email address.';
+      emailInput.focus();
+      return;
+    }
+
+    if (!isValidEmail(emailInput.value)) {
+      hint.textContent = 'That doesn\'t look quite right — try again.';
+      emailInput.focus();
+      return;
+    }
+
+    /* Success */
+    launchConfetti(document.querySelector('.subscribe-btn'));
+    form.style.display = 'none';
+    hint.style.display = 'none';
+    successMsg.style.display = 'block';
+  });
+
+/* ─── Scroll Reveal ─── */
+(function () {
+  document.querySelectorAll('.reveal-stagger').forEach(function (group) {
+    Array.from(group.children).filter(function (c) {
+      return c.classList.contains('reveal');
+    }).forEach(function (el, i) { el.style.transitionDelay = (i * 110) + 'ms'; });
+  });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+}());
+</script>
+</body>
+</html>
